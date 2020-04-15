@@ -20,13 +20,24 @@ public class SetUp {
 	 */
 	public static void setUpCalculator(CalculatorFace face) {
 
-		// delete this line.
-		face.writeToScreen("hello");
+		Brain brian  = new Brain(face);
 		
+		for(double i = 0.0; i < 10; i++) {
+			final double a = i;
+			face.addNumberActionListener((int)i, (e) -> {brian.operand(a);});
+		}
 		
-		// add code here that will have the effect of connecting
-		// the given face to your calculator
+		Character[] chars = {'+', '-', '*', '/'};
+		for(int i = 0; i < 4; i++) {
+			final char a = chars[i];
+			face.addActionListener(a, (e) -> {brian.operator();});
+		}
 		
+		face.addActionListener('C', (e) -> {brian.clear();});
+		
+		face.addPlusMinusActionListener((e -> {brian.pm();}));
+		
+	
 		
 	}
 	
