@@ -39,6 +39,8 @@ public class SetUp {
 		
 		
 		face.addActionListener('C', (e) -> {brain.clear();});
+		face.addActionListener('=', (e) -> {brain.equals();});
+		face.addActionListener('.', (e) -> {brain.decimal();});
 		
 		face.addPlusMinusActionListener((e -> {brain.pm();}));
 		

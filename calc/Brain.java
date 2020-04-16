@@ -21,7 +21,7 @@ public class Brain {
 	
 	private EvalStrat eval;
 	
-	private OpStrat up;
+	private OpStrat op;
 	
 	private State currentstate;
 	
@@ -40,7 +40,7 @@ public class Brain {
 		form = new DecimalFormat("#.####");
 		operands[0] = operand1;
 		operands[1] = operand2;
-		up = new Whole(this);
+		op = new PosWhole(this);
 		currentstate = new Op1(this);
 		
 	}
@@ -50,26 +50,36 @@ public class Brain {
 
 	public void operator(EvalStrat e) { currentstate.updateOperator(e); }
 	
-	public void decimal() {}
+	public void decimal() { op.decimalUpdate();}
 	
-	public void pm() {}
+	public void pm() {currentstate.plusminus(operands);}
 	
-	public void clear() {}
+	
+	
 	
 	public void output(Double num) { face.writeToScreen(form.format(num)); }
 	
-	public void equals() { currentstate.evaluate(operands); }
-	
-	
-	
-	
+	public void equals() { 
+		currentstate.evaluate(operands); 
+		switchState(new InBetween(this));
+	}
+
+	public void clear() {
+		operands[0] = 0.0;
+		operands[1] = 0.0;
+		op = new PosWhole(this);
+		currentstate = new Op1(this);
+		dplace = 0;
+		face.writeToScreen("");
+		
+	}
 	
 	/*Getters, setters, and switchers*/
 	public Double[] getOperands() { return operands; }
 	
-	public OpStrat getOpStrat() { return up;}
+	public OpStrat getOpStrat() { return op;}
 	
-	public void setOpStrat(OpStrat o) { up = o; }
+	public void setOpStrat(OpStrat o) { op = o; }
 	
 	public void setEvalStrat(EvalStrat e) { eval = e; }
 	
@@ -77,9 +87,11 @@ public class Brain {
 
 	public void switchState(State s) { currentstate = s; }
 	
-	public int getdecimalsplace() {
+	public int getDecimalsPlace() {
 		dplace++;
 		return dplace;
 	}
+	
+	public void setDecimalsPlace(int n) { dplace = n; } 
 
 }

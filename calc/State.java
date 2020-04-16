@@ -29,5 +29,9 @@ public abstract class State {
 	 */
 	public abstract void updateOperator(EvalStrat s);
 	
-	
+	/**
+	 * 
+	 */
+	public abstract Double[] plusminus(Double [] operands);
+
 }

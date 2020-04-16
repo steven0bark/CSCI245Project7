@@ -1,9 +1,5 @@
-/**
- * 
- */
 package calc;
 
-import java.math.*;
 
 /**
  * @author stevenbarker
@@ -19,18 +15,15 @@ public class PosDec implements OpStrat {
 	public PosDec(Brain b) { brain = b; }
 
 	@Override
-	public Double updateOperand(Double num, Double operand) { return operand + num * Math.pow(10, -brain.getdecimalsplace()); }
+	public Double updateOperand(Double num, Double operand) { return operand + (num * Math.pow(10, -brain.getDecimalsPlace())); }
 
 	@Override
-	public Double decimalUpdate(Double num, Double operand) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+	public void decimalUpdate() {}
 
 	@Override
-	public Double pmUpdate(Double num, Double operand) {
-		// TODO Auto-generated method stub
-		return null;
+	public Double pmUpdate(Double operand) {
+		brain.setOpStrat(new NegDec(brain));
+		return operand * -1;
 	}
 
 }

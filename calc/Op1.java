@@ -24,6 +24,10 @@ public class Op1 extends State{
 		return operands;
 
 	}
+	
+	public void decimal() {
+		brain.getOpStrat().decimalUpdate();
+	}
 
 	@Override
 	public Double[] evaluate(Double[] operands) { return operands; }
@@ -32,7 +36,18 @@ public class Op1 extends State{
 	public void updateOperator(EvalStrat s) {
 		brain.setEvalStrat(s);
 		brain.switchState(new Op2(brain));
+		brain.setOpStrat(new PosWhole(brain));
+		brain.setDecimalsPlace(0);
 		
+	}
+
+
+	@Override
+	public Double[] plusminus(Double[] operands) {
+		operands[0] = brain.getOpStrat().pmUpdate(operands[0]);
+		System.out.println("Operands[0]: " + operands[0]);
+		brain.output(operands[0]);
+		return operands;
 	}
 
 }
