@@ -20,22 +20,27 @@ public class SetUp {
 	 */
 	public static void setUpCalculator(CalculatorFace face) {
 
-		Brain brian  = new Brain(face);
+		Brain brain  = new Brain(face);
 		
 		for(double i = 0.0; i < 10; i++) {
 			final double a = i;
-			face.addNumberActionListener((int)i, (e) -> {brian.operand(a);});
+			face.addNumberActionListener((int)i, (e) -> {brain.operand(a);});
 		}
 		
-		Character[] chars = {'+', '-', '*', '/'};
-		for(int i = 0; i < 4; i++) {
-			final char a = chars[i];
-			face.addActionListener(a, (e) -> {brian.operator();});
-		}
 		
-		face.addActionListener('C', (e) -> {brian.clear();});
+		//When the operator buttons are pressed, it will tell the brain what strategy it needs and then the brain will call
+		//on the state to update the operands and change what happens when the operators are pressed
+		face.addActionListener('+', (e) -> {brain.operator(() -> {return brain.getOperands()[0] + brain.getOperands()[1];});});
+		face.addActionListener('-', (e) -> {brain.operator(() -> {return brain.getOperands()[0] - brain.getOperands()[1];});});
+		face.addActionListener('*', (e) -> {brain.operator(() -> {return brain.getOperands()[0] * brain.getOperands()[1];});});
+		face.addActionListener('/', (e) -> {brain.operator(() -> {return brain.getOperands()[0] / brain.getOperands()[1];});});
 		
-		face.addPlusMinusActionListener((e -> {brian.pm();}));
+		
+		
+		
+		face.addActionListener('C', (e) -> {brain.clear();});
+		
+		face.addPlusMinusActionListener((e -> {brain.pm();}));
 		
 	
 		

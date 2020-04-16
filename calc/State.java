@@ -17,18 +17,17 @@ public abstract class State {
 	/**
 	 * 
 	 */
-	public abstract Double updateOperand(Double num, Double operand1, Double operand2);
+	public abstract Double[] operand(Double num, Double[] operands);
 	
 	/**
 	 * 
 	 */
-	public abstract void evaluate(Double operand1, Double operand2);
+	public abstract Double[] evaluate(Double[] operands);
 	
 	/**
 	 * 
 	 */
-	public abstract void updateOperator(Double operand1, Double operand2);
-
-
+	public abstract void updateOperator(EvalStrat s);
+	
 	
 }
