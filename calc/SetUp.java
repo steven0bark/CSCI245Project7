@@ -12,6 +12,15 @@ package calc;
 */
 public class SetUp {
 
+	
+	public interface EvalStrat {
+		
+		Double evaluate();
+		
+	}
+	
+	
+	
 	/**
 	 * Method for initializing the calculator internals and
 	 * connecting them to the calculator face.
@@ -39,7 +48,7 @@ public class SetUp {
 		
 		
 		face.addActionListener('C', (e) -> {brain.clear();});
-		face.addActionListener('=', (e) -> {brain.equals();});
+		face.addActionListener('=', (e) -> {brain.equal();});
 		face.addActionListener('.', (e) -> {brain.decimal();});
 		
 		face.addPlusMinusActionListener((e -> {brain.pm();}));
