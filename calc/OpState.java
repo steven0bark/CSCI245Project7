@@ -5,14 +5,14 @@ package calc;
  * 
  * @author stevenbarker
  */
-public abstract class State {
+public abstract class OpState {
 
 	CalculatorFace face;
 	
 	/**
 	 * 
 	 */
-	public State() {}
+	public OpState() {}
 	
 	/**
 	 * 

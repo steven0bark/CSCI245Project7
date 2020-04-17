@@ -21,9 +21,11 @@ public class Brain {
 	
 	private EvalStrat eval;
 	
-	private OpStrat op;
+	private PosNegState posnegstate = new Positive(this);
 	
-	private State currentstate;
+	private WholeDecState wholedecstate = new Whole();
+	
+	private OpState operandstate = new Op1(this);
 	
 	private Double operand1 = 0.0;
 	
@@ -40,35 +42,37 @@ public class Brain {
 		form = new DecimalFormat("#.####");
 		operands[0] = operand1;
 		operands[1] = operand2;
-		op = new PosWhole(this);
-		currentstate = new Op1(this);
+		
 		
 	}
 
 	
-	public void operand(Double num){ operands = currentstate.operand(num, operands); }
+	public void operand(Double num){ operands = operandstate.operand(num, operands); }
 
-	public void operator(EvalStrat e) { currentstate.updateOperator(e); }
+	public void operator(EvalStrat e) { operandstate.updateOperator(e); }
 	
-	public void decimal() { op.decimalUpdate();}
+	public void decimal() { wholedecstate = new Decimal(this); }
 	
-	public void pm() {currentstate.plusminus(operands);}
-	
-	
-	
+	public void pm() {
+		operandstate.plusminus(operands);
+		posnegstate.pmUpdate();
+	}
 	
 	public void output(Double num) { face.writeToScreen(form.format(num)); }
 	
 	public void equals() { 
-		currentstate.evaluate(operands); 
-		switchState(new InBetween(this));
+		operandstate.evaluate(operands); 
+		setOpState(new InBetween(this));
+		setWholeDecState();
+		posnegstate = new Positive(this);
 	}
 
 	public void clear() {
 		operands[0] = 0.0;
 		operands[1] = 0.0;
-		op = new PosWhole(this);
-		currentstate = new Op1(this);
+		operandstate = new Op1(this);
+		posnegstate = new Positive(this);
+		wholedecstate = new Whole();
 		dplace = 0;
 		face.writeToScreen("");
 		
@@ -77,15 +81,19 @@ public class Brain {
 	/*Getters, setters, and switchers*/
 	public Double[] getOperands() { return operands; }
 	
-	public OpStrat getOpStrat() { return op;}
+	public PosNegState getPosNegState() { return posnegstate; }
 	
-	public void setOpStrat(OpStrat o) { op = o; }
+	public void setPosNegState(PosNegState s) { posnegstate = s; }
 	
 	public void setEvalStrat(EvalStrat e) { eval = e; }
 	
 	public EvalStrat getEvalStrat() { return eval; }
 
-	public void switchState(State s) { currentstate = s; }
+	public void setOpState(OpState s) { operandstate = s; }
+	
+	public WholeDecState getWholeDecState() { return wholedecstate; }
+	
+	public void setWholeDecState() { wholedecstate = new Whole(); }
 	
 	public int getDecimalsPlace() {
 		dplace++;

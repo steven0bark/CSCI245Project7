@@ -1,13 +1,10 @@
-/**
- * 
- */
 package calc;
 
 /**
  * @author stevenbarker
  *
  */
-public class InBetween extends State{
+public class InBetween extends OpState{
 
 	private Brain brain;
 	
@@ -21,8 +18,8 @@ public class InBetween extends State{
 		brain.clear();
 		operands[0] = num;
 		brain.output(operands[0]);
-		brain.switchState(new Op1(brain));
-		brain.setOpStrat(new PosWhole(brain));
+		brain.setOpState(new Op1(brain));
+		brain.setWholeDecState();
 		return operands;
 		
 	}
@@ -33,7 +30,7 @@ public class InBetween extends State{
 	@Override
 	public void updateOperator(EvalStrat s) {
 		brain.setEvalStrat(s);
-		brain.switchState(new Op2(brain));
+		brain.setOpState(new Op2(brain));
 	}
 
 	@Override
