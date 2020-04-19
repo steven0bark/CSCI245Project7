@@ -89,22 +89,42 @@ public class Brain {
 	private int dplace = 0;
 //}}}
 	
+
 //{{{Brain Methods
 	/**
 	 * Constructor
 	 *
-	 * @param f the Calculator face
+	 * @param f the CalculatorFace
 	 */
 	public Brain(CalculatorFace f){ face = f; }
 	
+	/**
+	 * @return the first operand for the EvalStrat classes in Setup
+	 */
 	public Double getOp1() { return op1.getOp(); }
 	
+	/**
+	 * @return the second operand for the EvalStrat classes in Setup
+	 */
 	public Double getOp2() { return op2.getOp(); }
 	
+	/**
+	 * When a button is pressed, the orperand with be updated.
+	 *
+	 * @param num The number that is pressed
+	 */
 	public void operand(Double num){ operandstate.operand(num); }
 
+	/**
+	 * When an operator is pressed, it will update the operator in the current operand state
+	 *
+	 * @param e The strategy for evaluating the expression
+	 */
 	public void operator(SetUp.EvalStrat e) { operandstate.updateOperator(e); }
 	
+	/**
+	 * When the decimal is pressed, it will ha
+	 */
 	public void decimal() { wholedecstate = dec; }
 	
 	public void pm() { operandstate.plusminus(); posnegstate.pmUpdate(); }
