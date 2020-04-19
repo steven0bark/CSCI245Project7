@@ -1,5 +1,4 @@
 package calc;
-
 import java.text.DecimalFormat;
 
 
@@ -17,78 +16,120 @@ import java.text.DecimalFormat;
 public class Brain {
 
 //{{{Main
+//{{{Instance Variables	
+
+	/**
+	 * The reference to the calculator face
+	 */
 	private CalculatorFace face;
-	
-	private SetUp.EvalStrat eval;
-	
-	private PosNegState posnegstate = new Positive();
-	
-	private WholeDecState wholedecstate = new Whole();
-	
-	private OpState operandstate = new Op1();
-	
-	private Double operand1 = 0.0;
-	
-	private Double operand2 = 0.0;
-	
-	private Double[] operands = new Double[2];
 
-	private DecimalFormat form;
+	/**
+	 * The current strategy for calculating
+	 */
+	private SetUp.EvalStrat eval;	
+
+	/**
+	 * The state for updating a positive operand
+	 */
+	private Positive pos = new Positive();
+
+	/**
+	 * The state for updating a negative operand
+	 */
+	private Negative neg = new Negative();
+
+	/**
+	 * The state for updating a whole operand
+	 */
+	private Whole whole = new Whole();
 	
+	/**
+	 * The state for updating a non-whole number
+	 */
+	private Decimal dec = new Decimal();
+
+	/**
+	 * The state for updating the first operand
+	 */
+	private OpState op1 = new Op1();
+	
+	/**
+	 * The state for operating the second operand
+	 */
+	private OpState op2 = new Op2();
+
+	/**
+	 * The inbetween state for updating operands
+	 */
+	private OpState inbetween = new InBetween();
+
+	/**
+	 * The current state for updating either positive or negative operands
+	 */
+	private PosNegState posnegstate = pos;
+
+	/**
+	 * The current state for updating either whole or non whole opernads
+	 */
+	private WholeDecState wholedecstate = whole;
+	
+	/**
+	 * The current state for updating operands
+	 */
+	private OpState operandstate = op1;
+
+	/**
+	 * The format for writing numbers to the screen
+	 */
+	private DecimalFormat form = new DecimalFormat("#.####");
+	
+	/**
+	 * The current decimals place
+	 */
 	private int dplace = 0;
+//}}}
 	
-	public Brain(calc.CalculatorFace f){ 
-		face = f; 
-		form = new DecimalFormat("#.####");
-		operands[0] = operand1;
-		operands[1] = operand2;
-		
-		
-	}
-
+//{{{Brain Methods
+	/**
+	 * Constructor
+	 *
+	 * @param f the Calculator face
+	 */
+	public Brain(CalculatorFace f){ face = f; }
 	
-	public void operand(Double num){ operandstate.operand(num,0); }
+	public Double getOp1() { return op1.getOp(); }
+	
+	public Double getOp2() { return op2.getOp(); }
+	
+	public void operand(Double num){ operandstate.operand(num); }
 
 	public void operator(SetUp.EvalStrat e) { operandstate.updateOperator(e); }
 	
-	public void decimal() { wholedecstate = new Decimal(); }
+	public void decimal() { wholedecstate = dec; }
 	
-	public void pm() {
-		operandstate.plusminus();
-		posnegstate.pmUpdate();
-	}
+	public void pm() { operandstate.plusminus(); posnegstate.pmUpdate(); }
 	
 	public void output(Double num) { face.writeToScreen(form.format(num)); }
 	
 	public void equal() { 
 		operandstate.evaluate(); 
-		posnegstate = new Positive();
-		wholedecstate = new Whole();
-		operandstate = new InBetween();
+		posnegstate = pos;
+		wholedecstate = whole;
+		operandstate = inbetween;
 	}
 
 	public void clear() {
-		operands[0] = 0.0;
-		operands[1] = 0.0;
-		posnegstate = new Positive();
-		wholedecstate = new Whole();
-		operandstate = new Op1();
+		op1.setOp(0.0);
+		op2.setOp(0.0);
+		posnegstate = pos;
+		wholedecstate = whole;
+		operandstate = op1;
 		dplace = 0;
-		face.writeToScreen("");
-		
+		face.writeToScreen("");	
 	}
-	
-	public Double[] getOperands() {return operands;}
+//}}}
+//}}}
 
-
-	
-	/*Getters, setters, and switchers*/
-	//public void setEvalStrat(SetUp.EvalStrat e) { eval = e; }
-	
-	public SetUp.EvalStrat getEvalStrat() { return eval; }
-	
-//}}}	
-	
 	
 //{{{OpState
 	
@@ -97,19 +138,18 @@ public class Brain {
 	 * 
 	 * @author stevenbarker
 	 */
-	public abstract class OpState {
-
-		public void operand(Double num, int i) {
-			operands[i] = posnegstate.updateOperand(wholedecstate.modifyFirst(operands[i]), wholedecstate.modifySecond(num));
-			output(operands[i]);
+	private abstract class OpState {
+		protected Double op = 0.0;
+		protected void operand(Double num) {
+			op = posnegstate.updateOperand(wholedecstate.modifyFirst(op), 
+					wholedecstate.modifySecond(num));
+			output(op);
 		}
-		
-		public abstract void evaluate(); 
-
+		protected void plusminus() { op *= -1; output(op); }
+		protected Double getOp() { return op; }
+		protected void setOp(Double num) { op=num; }
+		protected void evaluate() {}
 		public abstract void updateOperator(SetUp.EvalStrat s);
-		
-		public abstract void plusminus();
-
 	}
 
 		
@@ -118,80 +158,53 @@ public class Brain {
 		 * @author stevenbarker
 		 *
 		 */
-		public class Op1 extends OpState{
-			
-			public void operand(Double num, int i) { super.operand(num, 0); }
+	private class Op1 extends OpState{
 
-			public void evaluate() {} 
-
-			public void updateOperator(SetUp.EvalStrat s) {
-				eval = s;
-				dplace = 0;
-				posnegstate = new Positive();
-				wholedecstate = new Whole();
-				operandstate = new Op2();
-				
-			}
-
-			public void plusminus() {
-				operands[0] *= -1;
-				output(operands[0]);
-			}
-
+		public void updateOperator(SetUp.EvalStrat s) {
+			eval = s;
+			dplace = 0;
+			posnegstate = pos;
+			wholedecstate = whole;
+			operandstate = op2;
 		}
+	}
 		
 		/**
 		 * @author stevenbarker
 		 *
 		 */
-		public class Op2 extends OpState {
-			
-			public void operand(Double num, int i) { super.operand(num, 1); }
+	private class Op2 extends OpState {
 
-			public void evaluate() {
-				operands[0] = eval.evaluate();
-				operands[1] = 0.0;
-				output(operands[0]);
-			}
-
-			public void updateOperator(SetUp.EvalStrat e) {
-				equal();
-				operandstate = this;
-				eval = e;
-				
-			}
-
-			public void plusminus() {
-				operands[1] *= -1; 
-				output(operands[1]);
-			}
-
+		@Override
+		public void evaluate() {
+			op1.setOp(eval.evaluate());  
+			op= 0.0;
+			output(op1.getOp());
 		}
+
+		public void updateOperator(SetUp.EvalStrat e) {
+			equal();
+			operandstate = this;
+			eval = e;	
+		}
+
+	}
 		
 		/**
 		 * @author stevenbarker
 		 *
 		 */
-		public class InBetween extends OpState{
+	public class InBetween extends OpState{
 			
-			public void operand(Double num, int i) {
-				clear();
-				operands[0] = num;
-				output(operands[0]);
-				operandstate = new Op1();
-				wholedecstate = new Whole();
-			}
-
-			public void evaluate() {} 
-
-			public void updateOperator(SetUp.EvalStrat s) {
-				eval = s;
-				operandstate = new Op2();
-			}
-
-			public void plusminus() {} 
-
+		@Override
+		public void operand(Double num) {
+			clear();
+			op1.setOp(num);
+			output(op1.getOp());
 		}
+
+		public void updateOperator(SetUp.EvalStrat s) { eval = s; operandstate = op2; }
+	}
 		
 //}}}		
 		
@@ -203,80 +216,60 @@ public class Brain {
 		 * @author stevenbarker
 		 *
 		 */
-		public interface PosNegState {
-			
+		private interface PosNegState {
 			Double updateOperand(Double num1, Double num2);
-			
 			void pmUpdate();
 		}
 
 			
-			/**
-			 * @author stevenbarker
-			 *
-			 */
-			public class Negative implements PosNegState {
-
-		
-				public Double updateOperand(Double num1, Double num2) { return num1 - num2; }
-
-
-				public void pmUpdate() { posnegstate = new Positive(); }
+		/**
+		 * @author stevenbarker
+		 *
+		 */
+		private class Negative implements PosNegState {
+			public Double updateOperand(Double num1, Double num2) { return num1 - num2; }
+			public void pmUpdate() { posnegstate = pos; }			
+		}
 
 
-			}
-
-
-			/**
-			 * 
-			 * @author stevenbarker
-			 *
-			 */
-			public  class Positive implements PosNegState{
-				
-				
-				public Positive() {}
-				
-				public Double updateOperand(Double num1, Double num2) { return num1 + num2; }
-
-				public void pmUpdate() { posnegstate = new Negative();}
-
-
-
-			}
+		/**
+		 * 
+		 * @author stevenbarker
+		 *
+		 */
+		private class Positive implements PosNegState{
+			public Double updateOperand(Double num1, Double num2) { return num1 + num2; }
+			public void pmUpdate() { posnegstate = neg; }
+		}
 ///}}}			
 			
 			
 //{{{WholeDecState			
 			
 
-			public interface WholeDecState {
-				Double modifyFirst(Double num);
-				Double modifySecond(Double num);
-			}	
+		private interface WholeDecState {
+			Double modifyFirst(Double num);
+			Double modifySecond(Double num);
+		}	
+			
+		/**
+		 * @author stevenbarker
+		 *
+		 */
+		private class Whole implements WholeDecState {
+			public Double modifyFirst(Double num) { return num*10; }
+			public Double modifySecond(Double num) { return num; }
+		}
 				
-			/**
-			 * @author stevenbarker
-			 *
-			 */
-			public class Whole implements WholeDecState {
-				
-				public Double modifyFirst(Double num) { return num*10; }
-				public Double modifySecond(Double num) { return num; }
-
-			}
-				
-			/**
-			* @author stevenbarker
-			*
-			*/
-			public class Decimal implements WholeDecState {
-				public Double modifyFirst(Double num) { return num; }
-				public Double modifySecond(Double num) {dplace++; return num * Math.pow(10, -dplace);}
-
-			}
+		/**
+		* @author stevenbarker
+		*
+		*/
+		private class Decimal implements WholeDecState {
+			public Double modifyFirst(Double num) { return num; }
+			public Double modifySecond(Double num) { dplace++; return num * Math.pow(10, -dplace); }
+		}
 				
 //}}}
 		
-
 }

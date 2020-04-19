@@ -13,11 +13,7 @@ package calc;
 public class SetUp {
 
 	
-	public interface EvalStrat {
-		
-		Double evaluate();
-		
-	}
+	public interface EvalStrat { Double evaluate(); }
 	
 	
 	
@@ -39,10 +35,10 @@ public class SetUp {
 		
 		//When the operator buttons are pressed, it will tell the brain what strategy it needs and then the brain will call
 		//on the state to update the operands and change what happens when the operators are pressed
-		face.addActionListener('+', (e) -> {brain.operator(() -> {return brain.getOperands()[0] + brain.getOperands()[1];});});
-		face.addActionListener('-', (e) -> {brain.operator(() -> {return brain.getOperands()[0] - brain.getOperands()[1];});});
-		face.addActionListener('*', (e) -> {brain.operator(() -> {return brain.getOperands()[0] * brain.getOperands()[1];});});
-		face.addActionListener('/', (e) -> {brain.operator(() -> {return brain.getOperands()[0] / brain.getOperands()[1];});});
+		face.addActionListener('+', (e) -> {brain.operator(() -> {return brain.getOp1() + brain.getOp2();});});
+		face.addActionListener('-', (e) -> {brain.operator(() -> {return brain.getOp1() - brain.getOp2();});});
+		face.addActionListener('*', (e) -> {brain.operator(() -> {return brain.getOp1() * brain.getOp2();});});
+		face.addActionListener('/', (e) -> {brain.operator(() -> {return brain.getOp1() / brain.getOp2();});});
 		
 		
 		
