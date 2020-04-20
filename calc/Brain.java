@@ -15,7 +15,8 @@ import java.text.DecimalFormat;
 
 public class Brain {
 
-//{{{Main
+
+//{{{Controller
 //{{{Instance Variables	
 
 	/**
@@ -91,6 +92,7 @@ public class Brain {
 	
 
 //{{{Brain Methods
+		
 	/**
 	 * Constructor
 	 *
@@ -116,7 +118,8 @@ public class Brain {
 	public void operand(Double num){ operandstate.operand(num); }
 
 	/**
-	 * When an operator is pressed, it will update the operator in the current operand state
+	 * When an operator is pressed, it will update the 
+	 * operator in the current operand state
 	 *
 	 * @param e The strategy for evaluating the expression
 	 */
@@ -127,24 +130,42 @@ public class Brain {
 	 */
 	public void decimal() { wholedecstate = dec; }
 	
+	/**
+	 * When the plus minus button is pressed, the operand will be updated
+	 * and the posneg state will be updated.
+	 */
 	public void pm() { operandstate.plusminus(); posnegstate.pmUpdate(); }
 	
+	/**
+	 * This method is for effiency in writing numbers to the screen 
+	 *
+	 * @param num The number to be outputted
+	 */
 	public void output(Double num) { face.writeToScreen(form.format(num)); }
 	
+	/**
+	 * When the equals button is pressed, the expression will be evaluated, 
+	 * everything will be reset and the operandstate will be set to the 
+	 * inbetween state
+	 */
 	public void equal() { 
 		operandstate.evaluate(); 
 		posnegstate = pos;
+		wholedecstate.resetDPlace();
 		wholedecstate = whole;
 		operandstate = inbetween;
 	}
 
+	/**
+	 * When the clear button is pressed this will reset everything
+	 */
 	public void clear() {
 		op1.setOp(0.0);
 		op2.setOp(0.0);
 		posnegstate = pos;
+		wholedecstate.resetDPlace();		
 		wholedecstate = whole;
 		operandstate = op1;
-		dplace = 0;
 		face.writeToScreen("");	
 	}
 //}}}
@@ -154,12 +175,22 @@ public class Brain {
 //{{{OpState
 	
 	/**
-	 * 
+	 * OpState.java
+	 *
+	 * This is the superclass for the operand state
 	 * 
 	 * @author stevenbarker
 	 */
 	private abstract class OpState {
+		
+		/**
+		 * The operand
+		 */
 		protected Double op = 0.0;
+	
+		/**
+		 * 
+		 */
 		protected void operand(Double num) {
 			op = posnegstate.updateOperand(wholedecstate.modifyFirst(op), 
 					wholedecstate.modifySecond(num));
@@ -175,23 +206,31 @@ public class Brain {
 		
 		
 		/**
-		 * @author stevenbarker
+		 * Op1.java
 		 *
+		 * This is a subclass of OpState that is active when 
+		 * the calculator is working with the first operand
+		 *
+		 * @author stevenbarker
 		 */
 	private class Op1 extends OpState{
 
 		public void updateOperator(SetUp.EvalStrat s) {
 			eval = s;
-			dplace = 0;
 			posnegstate = pos;
+			wholedecstate.resetDPlace();
 			wholedecstate = whole;
 			operandstate = op2;
 		}
 	}
 		
 		/**
-		 * @author stevenbarker
+		 * Op2.java
 		 *
+		 * This the subclass of OpState that is active when
+		 * the calculator is working with the second operand
+		 *
+		 * @author stevenbarker
 		 */
 	private class Op2 extends OpState {
 
@@ -211,8 +250,12 @@ public class Brain {
 	}
 		
 		/**
-		 * @author stevenbarker
+		 * InBetween.java
 		 *
+		 * This is the subclass of OpState that is active
+		 * between doing a calculation and doing something else
+		 *
+		 * @author stevenbarker
 		 */
 	public class InBetween extends OpState{
 			
@@ -236,9 +279,9 @@ public class Brain {
 		 * @author stevenbarker
 		 *
 		 */
-		private interface PosNegState {
-			Double updateOperand(Double num1, Double num2);
-			void pmUpdate();
+		private abstract class PosNegState {
+			public abstract Double updateOperand(Double num1, Double num2);
+			public abstract void pmUpdate();
 		}
 
 			
@@ -246,7 +289,7 @@ public class Brain {
 		 * @author stevenbarker
 		 *
 		 */
-		private class Negative implements PosNegState {
+		private class Negative extends PosNegState {
 			public Double updateOperand(Double num1, Double num2) { return num1 - num2; }
 			public void pmUpdate() { posnegstate = pos; }			
 		}
@@ -257,7 +300,7 @@ public class Brain {
 		 * @author stevenbarker
 		 *
 		 */
-		private class Positive implements PosNegState{
+		private class Positive extends PosNegState{
 			public Double updateOperand(Double num1, Double num2) { return num1 + num2; }
 			public void pmUpdate() { posnegstate = neg; }
 		}
@@ -267,16 +310,18 @@ public class Brain {
 //{{{WholeDecState			
 			
 
-		private interface WholeDecState {
-			Double modifyFirst(Double num);
-			Double modifySecond(Double num);
+		private abstract class WholeDecState {
+			protected int dplace = 0;
+			protected void resetDPlace() { dplace = 0; }
+			public abstract Double modifyFirst(Double num);
+			public abstract Double modifySecond(Double num);
 		}	
 			
 		/**
 		 * @author stevenbarker
 		 *
 		 */
-		private class Whole implements WholeDecState {
+		private class Whole extends WholeDecState {
 			public Double modifyFirst(Double num) { return num*10; }
 			public Double modifySecond(Double num) { return num; }
 		}
@@ -285,7 +330,7 @@ public class Brain {
 		* @author stevenbarker
 		*
 		*/
-		private class Decimal implements WholeDecState {
+		private class Decimal extends WholeDecState {
 			public Double modifyFirst(Double num) { return num; }
 			public Double modifySecond(Double num) { dplace++; return num * Math.pow(10, -dplace); }
 		}

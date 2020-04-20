@@ -1,7 +1,7 @@
 package calc;
 
 /**
- * SetUp
+ * SetUp.java
  * 
  * Class to set up and start the calculator, plus
  * facilities for test-driving the calculator.
@@ -12,7 +12,16 @@ package calc;
 */
 public class SetUp {
 
-	
+	/**
+	 * EvalStrat.java
+	 * 
+	 * This interface is the strategy for evaluating the 
+	 * expression, each instance is definded anonymously
+	 * inside the anonymous class in adding the action
+	 * listeners to the operator buttons.
+	 *
+	 * @author Steven Barker
+	 */
 	public interface EvalStrat { Double evaluate(); }
 	
 	
@@ -41,12 +50,9 @@ public class SetUp {
 		face.addActionListener('/', (e) -> {brain.operator(() -> {return brain.getOp1() / brain.getOp2();});});
 		
 		
-		
-		
 		face.addActionListener('C', (e) -> {brain.clear();});
 		face.addActionListener('=', (e) -> {brain.equal();});
 		face.addActionListener('.', (e) -> {brain.decimal();});
-		
 		face.addPlusMinusActionListener((e -> {brain.pm();}));
 		
 	
