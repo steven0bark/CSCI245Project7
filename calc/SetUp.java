@@ -16,7 +16,7 @@ public class SetUp {
 	 * EvalStrat.java
 	 * 
 	 * This interface is the strategy for evaluating the 
-	 * expression, each instance is definded anonymously
+	 * expression, each instance is defined anonymously
 	 * inside the anonymous class in adding the action
 	 * listeners to the operator buttons.
 	 *
@@ -42,8 +42,8 @@ public class SetUp {
 		}
 		
 		
-		//When the operator buttons are pressed, it will tell the brain what strategy it needs and then the brain will call
-		//on the state to update the operands and change what happens when the operators are pressed
+		//When the operator buttons are pressed, it will tell the brain what strategy it needs to use 
+		//when evaluating the expression. 
 		face.addActionListener('+', (e) -> {brain.operator(() -> {return brain.getOp1() + brain.getOp2();});});
 		face.addActionListener('-', (e) -> {brain.operator(() -> {return brain.getOp1() - brain.getOp2();});});
 		face.addActionListener('*', (e) -> {brain.operator(() -> {return brain.getOp1() * brain.getOp2();});});
