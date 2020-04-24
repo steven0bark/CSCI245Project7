@@ -29,37 +29,37 @@ public class Brain {
 	/**
 	 * The state for updating a positive operand
 	 */
-	private Positive pos = new Positive();
+	private final Positive pos = new Positive();
 
 	/**
 	 * The state for updating a negative operand
 	 */
-	private Negative neg = new Negative();
+	private final Negative neg = new Negative();
 
 	/**
 	 * The state for updating a whole operand
 	 */
-	private Whole whole = new Whole();
+	private final Whole whole = new Whole();
 	
 	/**
 	 * The state for updating a non-whole number
 	*/
-	private Decimal dec = new Decimal();
+	private final Decimal dec = new Decimal();
 
 	/**
 	 * The state for updating the first operand
 	 */
-	private OpState op1 = new Op1();
+	private final OpState op1 = new Op1();
 	
 	/**
 	 * The state for operating the second operand
 	 */
-	private OpState op2 = new Op2();
+	private final OpState op2 = new Op2();
 
 	/**
 	 * The inbetween state for updating operands
 	 */
-	private OpState inbetween = new InBetween();
+	private final OpState inbetween = new InBetween();
 
 	/**
 	 * The current state for updating either positive or negative operands
@@ -178,7 +178,8 @@ public class Brain {
 		 * @return the updated operand
 		 */
 		protected Double operand(Double num) {
-			op = posnegstate.updateOperand(wholedecstate.modifyFirst(op), wholedecstate.modifySecond(num));
+			op = posnegstate.updateOperand(wholedecstate.modifyFirst(op), 
+					wholedecstate.modifySecond(num));
 			return op;
 		}
 
@@ -278,8 +279,8 @@ public class Brain {
 		 */
 		public Double operand(Double num) {
 			clear();
-			op1.setOp(num);
-			return op1.getOp();
+			operandstate = op1;
+			return operandstate.operand(num);
 		}
 
 		/**
@@ -312,6 +313,7 @@ public class Brain {
 			 * Switches the states
 			 */
 			public abstract PosNegState pmUpdate();
+			
 		}
 
 			
@@ -335,6 +337,7 @@ public class Brain {
 			 * Switches the state
 			 */
 			public PosNegState pmUpdate() { return pos; }
+			
 		}
 
 
@@ -357,6 +360,7 @@ public class Brain {
 			 * Switches the states
 			 */
 			public PosNegState pmUpdate() { return  neg; }
+			
 		}
 			
 			
@@ -421,6 +425,7 @@ public class Brain {
 			 * Just returns the same number
 			 */
 			public Double modifySecond(Double num) { return num; }
+			
 		}
 				
 		/**
@@ -444,6 +449,5 @@ public class Brain {
 			public Double modifySecond(Double num) { dplace++; return num * Math.pow(10, -dplace); }
 			
 		}
-				
-		
+
 }

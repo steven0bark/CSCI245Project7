@@ -41,7 +41,6 @@ public class SetUp {
 			face.addNumberActionListener((int)i, (e) -> {brain.operand(a);});
 		}
 		
-		
 		//When the operator buttons are pressed, it will tell the brain what strategy it needs to use 
 		//when evaluating the expression. 
 		face.addActionListener('+', (e) -> {brain.operator(() -> {return brain.getOp1() + brain.getOp2();});});
@@ -53,9 +52,8 @@ public class SetUp {
 		face.addActionListener('C', (e) -> {brain.clear();});
 		face.addActionListener('=', (e) -> {brain.equal();});
 		face.addActionListener('.', (e) -> {brain.decimal();});
-		face.addPlusMinusActionListener((e -> {brain.pm();}));
-		
-	
+		face.addPlusMinusActionListener((e -> {brain.pm();}));		
+
 		
 	}
 	
